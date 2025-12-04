@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        input[type="tel"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input[type="tel"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .location-info {
+            margin-bottom: 15px;
+        }
+        
+        .location-info strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .location-info span {
+            color: #333;
+        }
+        
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
+            margin-top: 20px;
+            background: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #666;
+        }
+        
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .tracked-list {
+            margin-top: 30px;
+        }
+        
+        .tracked-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tracked-item .phone {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .tracked-item .time {
+            font-size: 0.85em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📍 Location Tracker</h1>
+        <p class="subtitle">Track location by phone number</p>
+        
+        <div class="input-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="tel" id="phoneNumber" placeholder="+1 (555) 123-4567" required>
+        </div>
+        
+        <button class="btn" onclick="trackLocation()">Track Location</button>
+        
+        <div class="result" id="result">
+            <h3 style="color: #667eea; margin-bottom: 15px;">Location Details</h3>
+            <div class="location-info">
+                <strong>Phone Number:</strong>
+                <span id="displayPhone"></span>
+            </div>
+            <div class="location-info">
+                <strong>Latitude:</strong>
+                <span id="latitude"></span>
+            </div>
+            <div class="location-info">
+                <strong>Longitude:</strong>
+                <span id="longitude"></span>
+            </div>
+            <div class="location-info">
+                <strong>Address:</strong>
+                <span id="address"></span>
+            </div>
+            <div class="location-info">
+                <strong>Last Updated:</strong>
+                <span id="timestamp"></span>
+            </div>
+            <div id="map">Map View (Demo)</div>
+        </div>
+        
+        <div class="warning">
+            <strong>⚠️ Important Notice:</strong> This is a demonstration website. Real phone number location tracking requires:
+            <ul style="margin-top: 10px; margin-left: 20px;">
+                <li>User consent and authorization</li>
+                <li>Carrier API integration</li>
+                <li>Legal compliance (privacy laws)</li>
+                <li>Backend server infrastructure</li>
+            </ul>
+        </div>
+        
+        <div class="tracked-list" id="trackedList" style="display: none;">
+            <h3 style="color: #667eea; margin-bottom: 15px;">Recent Tracks</h3>
+            <div id="trackedItems"></div>
+        </div>
+    </div>
+    
+    <script>
+        let trackedNumbers = [];
+        
+        function trackLocation() {
+            const phoneInput = document.getElementById('phoneNumber');
+            const phone = phoneInput.value.trim();
+            
+            if (!phone) {
+                alert('Please enter a phone number');
+                return;
+            }
+            
+            // Simulate location tracking (demo purposes)
+            const demoLocations = [
+                { lat: 40.7128, lng: -74.0060, address: 'New York, NY, USA' },
+                { lat: 34.0522, lng: -118.2437, address: 'Los Angeles, CA, USA' },
+                { lat: 51.5074, lng: -0.1278, address: 'London, UK' },
+                { lat: 35.6762, lng: 139.6503, address: 'Tokyo, Japan' },
+                { lat: 48.8566, lng: 2.3522, address: 'Paris, France' }
+            ];
+            
+            const randomLocation = demoLocations[Math.floor(Math.random() * demoLocations.length)];
+            
+            // Display results
+            document.getElementById('displayPhone').textContent = phone;
+            document.getElementById('latitude').textContent = randomLocation.lat.toFixed(4);
+            document.getElementById('longitude').textContent = randomLocation.lng.toFixed(4);
+            document.getElementById('address').textContent = randomLocation.address;
+            document.getElementById('timestamp').textContent = new Date().toLocaleString();
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.classList.add('show');
+            
+            // Add to tracked list
+            addToTrackedList(phone, randomLocation.address);
+            
+            // Scroll to result
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        function addToTrackedList(phone, address) {
+            trackedNumbers.unshift({
+                phone: phone,
+                address: address,
+                time: new Date().toLocaleTimeString()
+            });
+            
+            if (trackedNumbers.length > 5) {
+                trackedNumbers.pop();
+            }
+            
+            updateTrackedList();
+        }
+        
+        function updateTrackedList() {
+            const listDiv = document.getElementById('trackedList');
+            const itemsDiv = document.getElementById('trackedItems');
+            
+            if (trackedNumbers.length > 0) {
+                listDiv.style.display = 'block';
+                itemsDiv.innerHTML = trackedNumbers.map(item => `
+                    <div class="tracked-item">
+                        <div>
+                            <div class="phone">${item.phone}</div>
+                            <div style="font-size: 0.85em; color: #666;">${item.address}</div>
+                        </div>
+                        <div class="time">${item.time}</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Allow Enter key to submit
+        document.getElementById('phoneNumber').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                trackLocation();
+            }
+        });
+    </script>
+</body>
+</html>
